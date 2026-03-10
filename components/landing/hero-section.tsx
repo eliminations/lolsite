@@ -29,7 +29,7 @@ export function HeroSection() {
               $lol
             </span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-md mx-auto">
+          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-lg mx-auto font-medium">
             The legendary word &quot;LOL&quot; has been used since the 80&apos;s with proof that it was out before the infamous 2011 push. Lolillions.
           </p>
         </div>
@@ -39,7 +39,7 @@ export function HeroSection() {
           onClick={copyCA}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary/60 border border-border/40 hover:border-primary/30 transition-colors group cursor-pointer"
         >
-          <span className="text-xs text-muted-foreground font-mono truncate max-w-[200px] sm:max-w-none">
+          <span className="text-sm text-muted-foreground font-mono truncate max-w-[200px] sm:max-w-none">
             {CONTRACT_ADDRESS}
           </span>
           {copied ? (

@@ -12,10 +12,10 @@ export function CTASection() {
         <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-primary/[0.06] blur-3xl" />
 
         <div className="relative z-10 flex flex-col items-center text-center py-16 px-8 gap-5">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
             Get in early
           </h2>
-          <p className="text-muted-foreground max-w-sm">
+          <p className="text-lg text-muted-foreground max-w-sm">
             Join the community. Play the game. Have a say in what gets built next.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">

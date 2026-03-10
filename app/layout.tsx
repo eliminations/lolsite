@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Sora, JetBrains_Mono } from "next/font/google";
+import { Quicksand, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
-const sora = Sora({
+const quicksand = Quicksand({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -30,7 +31,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/bernoru" />
       </head>
       <body
-        className={`${sora.variable} ${jetbrainsMono.variable} antialiased min-h-screen`}
+        className={`${quicksand.variable} ${jetbrainsMono.variable} antialiased min-h-screen`}
       >
         {/* Global blurred background image */}
         <div className="fixed inset-0 -z-10">
