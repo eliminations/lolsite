@@ -1,0 +1,46 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { LolLogo } from "@/components/brand/lol-logo";
+import { cn } from "@/lib/utils";
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/utility", label: "Utility" },
+  { href: "/game", label: "Game" },
+];
+
+export function Navbar() {
+  const pathname = usePathname();
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6 md:px-8">
+        <Link href="/" className="flex items-center gap-2.5">
+          <LolLogo size="sm" showGlow={false} />
+          <span className="font-mono font-bold text-base text-primary tracking-tight">
+            $lol
+          </span>
+        </Link>
+
+        <nav className="flex items-center gap-0.5">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-150",
+                pathname === link.href
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}
