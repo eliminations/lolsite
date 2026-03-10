@@ -13,8 +13,8 @@ const steps = [
   },
   {
     icon: Repeat,
-    title: "Swap for $lol",
-    description: "Head to Raydium or Jupiter and swap SOL for $lol.",
+    title: "Swap for lol",
+    description: "Head to Raydium or Jupiter and swap SOL for lol.",
   },
   {
     icon: PartyPopper,

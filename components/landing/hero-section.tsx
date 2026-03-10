@@ -25,7 +25,7 @@ export function HeroSection() {
           <div className="absolute inset-0 rounded-full bg-primary/15 blur-3xl scale-150 gpu-accelerated animate-[glow-pulse_4s_ease-in-out_infinite]" />
           <Image
             src="/lol-logo.svg"
-            alt="$lol"
+            alt="lol"
             width={280}
             height={280}
             className="relative z-10 w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72"
@@ -37,7 +37,7 @@ export function HeroSection() {
         <div className="space-y-4">
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter">
             <span className="font-mono bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">
-              $lol
+              lol
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-lg mx-auto font-medium">

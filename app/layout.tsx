@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "$lol",
+  title: "lol",
   description: "Community-powered memecoin. Games, governance, rewards.",
 };
 

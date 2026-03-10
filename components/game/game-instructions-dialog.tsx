@@ -24,7 +24,7 @@ export function GameInstructionsDialog({ open, onClose }: GameInstructionsDialog
           <DialogTitle className="text-2xl flex items-center gap-3">
             How to Play
             <Badge variant="secondary" className="font-mono">
-              $lol
+              lol
             </Badge>
           </DialogTitle>
           <DialogDescription>

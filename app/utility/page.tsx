@@ -14,7 +14,7 @@ export default function UtilityPage() {
               Utility
             </h1>
             <p className="text-muted-foreground max-w-md">
-              Tools being built for <span className="font-mono text-primary">$lol</span> holders. Shipping in the open.
+              Tools being built for <span className="font-mono text-primary">lol</span> holders. Shipping in the open.
             </p>
           </div>
 

@@ -35,6 +35,6 @@ export const STATS = [
 export const UTILITY_ITEMS = [
   {
     title: "Rewards",
-    description: "Earn $lol for contributing content, playing games, and holding.",
+    description: "Earn lol for contributing content, playing games, and holding.",
   },
 ];

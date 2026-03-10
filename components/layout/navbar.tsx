@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LolLogo } from "@/components/brand/lol-logo";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -17,11 +16,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6 md:px-8">
-        <Link href="/" className="flex items-center gap-2.5">
-          <LolLogo size="sm" showGlow={false} />
-          <span className="font-mono font-bold text-base text-primary tracking-tight">
-            $lol
-          </span>
+        <Link href="/" className="font-mono font-bold text-lg text-primary tracking-tight">
+          lol
         </Link>
 
         <nav className="flex items-center gap-0.5">
