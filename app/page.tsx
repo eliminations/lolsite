@@ -4,7 +4,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { HeroSection } from "@/components/landing/hero-section";
 import { FeaturesSection } from "@/components/landing/features-section";
-import { StatsSection } from "@/components/landing/stats-section";
+import { HowToBuySection } from "@/components/landing/stats-section";
 import { CTASection } from "@/components/landing/cta-section";
 import { ChartSection } from "@/components/landing/chart-section";
 
@@ -24,7 +24,7 @@ export default function Home() {
 
         <FeaturesSection />
 
-        <StatsSection />
+        <HowToBuySection />
 
         <div className="mx-auto max-w-5xl px-6 md:px-8">
           <div className="h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
