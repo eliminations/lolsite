@@ -13,7 +13,7 @@ export function CTASection() {
 
         <div className="relative z-10 flex flex-col items-center text-center py-16 px-8 gap-5">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Get in early
+            Community is Everything
           </h2>
           <p className="text-lg text-muted-foreground max-w-sm">
             Join the community. Play the game. Have a say in what gets built next.
