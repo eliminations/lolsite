@@ -1,25 +1,23 @@
 export const GAME_ROUNDS = 5;
-export const LAUGH_THRESHOLD = 70;
+export const LAUGH_THRESHOLD = 75;
 
-export const DUMMY_VIDEOS = [
-  { id: "1", title: "Cat vs Cucumber Compilation", duration: "2:34" },
-  { id: "2", title: "Dad Jokes: Impossible Edition", duration: "3:12" },
-  { id: "3", title: "Try Not to Laugh: Animals", duration: "4:01" },
-  { id: "4", title: "Epic Fail Montage #47", duration: "2:58" },
-  { id: "5", title: "Comedians Breaking Character", duration: "5:23" },
-  { id: "6", title: "Kids Say the Darndest Things", duration: "3:45" },
-  { id: "7", title: "Perfectly Cut Screams", duration: "1:59" },
-  { id: "8", title: "When Autocorrect Attacks", duration: "2:17" },
-];
+export type GameVideo = {
+  id: string;
+  title: string;
+  type: "youtube" | "file";
+  url?: string; // blob URL for uploaded files
+};
+
+export const DEFAULT_VIDEOS: GameVideo[] = [];
 
 export const FEATURES = [
   {
-    title: "Try Not to Laugh",
+    title: "Try Not to Lol",
     description:
       "Community-curated videos. Your mic is hot. One laugh and you're out. Survive all five rounds to prove you're built different.",
     icon: "Gamepad2" as const,
   },
-{
+  {
     title: "Reward System",
     description:
       "Play games, contribute content, hold your bag. Active participants earn from the community treasury.",

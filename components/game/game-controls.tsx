@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Play, SkipForward, RotateCcw } from "lucide-react";
 
 interface GameControlsProps {
@@ -16,43 +16,45 @@ interface GameControlsProps {
 
 export function GameControls({
   isPlaying,
-  currentRound,
-  totalRounds,
   onStart,
   onSkip,
   onReset,
   gameOver,
 }: GameControlsProps) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        {!gameOver ? (
-          <>
-            <Button onClick={onStart} className="font-semibold" disabled={isPlaying}>
-              <Play className="w-4 h-4 mr-2" />
-              {isPlaying ? "In Progress" : "Start Round"}
+    <Card className="border-border/50 bg-card/50">
+      <CardContent className="py-4">
+        <div className="flex items-center gap-3">
+          {!gameOver ? (
+            <>
+              <Button
+                onClick={onStart}
+                className="font-semibold flex-1"
+                disabled={isPlaying}
+                size="lg"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                {isPlaying ? "In Progress..." : "Start Round"}
+              </Button>
+              <Button
+                onClick={onSkip}
+                variant="outline"
+                className="border-border/50 flex-1"
+                disabled={!isPlaying}
+                size="lg"
+              >
+                <SkipForward className="w-4 h-4 mr-2" />
+                Survived
+              </Button>
+            </>
+          ) : (
+            <Button onClick={onReset} className="font-semibold flex-1" size="lg">
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Play Again
             </Button>
-            <Button
-              onClick={onSkip}
-              variant="outline"
-              className="border-border/50"
-              disabled={!isPlaying}
-            >
-              <SkipForward className="w-4 h-4 mr-2" />
-              Skip
-            </Button>
-          </>
-        ) : (
-          <Button onClick={onReset} className="font-semibold">
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Play Again
-          </Button>
-        )}
-      </div>
-
-      <Badge variant="secondary" className="text-sm px-3 py-1 font-mono">
-        Round {currentRound} / {totalRounds}
-      </Badge>
-    </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

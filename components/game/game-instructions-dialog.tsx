@@ -35,29 +35,29 @@ export function GameInstructionsDialog({ open, onClose }: GameInstructionsDialog
         <ol className="space-y-3 text-sm text-muted-foreground my-4">
           <li className="flex gap-3">
             <span className="font-mono text-primary font-bold shrink-0">01</span>
-            <span>Enable your microphone by clicking the mic button.</span>
+            <span>Allow microphone access when prompted. Your browser will ask for permission.</span>
           </li>
           <li className="flex gap-3">
             <span className="font-mono text-primary font-bold shrink-0">02</span>
-            <span>Press &quot;Start Round&quot; to begin watching a video.</span>
+            <span>Press &quot;Start Round&quot; to begin. A random video will play.</span>
           </li>
           <li className="flex gap-3">
             <span className="font-mono text-primary font-bold shrink-0">03</span>
-            <span>The mic listens for laughter. If it detects a laugh — you lose the round.</span>
+            <span>Your mic is listening. If it picks up a laugh — game over.</span>
           </li>
           <li className="flex gap-3">
             <span className="font-mono text-primary font-bold shrink-0">04</span>
-            <span>Survive all 5 rounds without laughing to win.</span>
+            <span>Survive the video? Hit &quot;Survived&quot; to move to the next round.</span>
           </li>
           <li className="flex gap-3">
             <span className="font-mono text-primary font-bold shrink-0">05</span>
-            <span>Videos are picked by the community. Good luck keeping a straight face.</span>
+            <span>Beat all 5 rounds without laughing to prove you're built different.</span>
           </li>
         </ol>
 
         <DialogFooter>
           <Button onClick={onClose} className="w-full font-semibold">
-            Got it, let&apos;s go
+            Let&apos;s go
           </Button>
         </DialogFooter>
       </DialogContent>
