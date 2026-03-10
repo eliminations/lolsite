@@ -39,6 +39,14 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          <a
+            href="https://x.com/i/communities/2030949530640720055"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground transition-colors duration-150"
+          >
+            Community
+          </a>
         </nav>
       </div>
     </header>

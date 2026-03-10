@@ -18,16 +18,29 @@ export function CTASection() {
           <p className="text-muted-foreground max-w-sm">
             Join the community. Play the game. Have a say in what gets built next.
           </p>
-          <Link
-            href="/game"
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "text-base px-8 font-semibold mt-2 group"
-            )}
-          >
-            Start Playing
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+            <Link
+              href="/game"
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "text-base px-8 font-semibold group"
+              )}
+            >
+              Start Playing
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+            <a
+              href="https://x.com/i/communities/2030949530640720055"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "text-base px-8 font-semibold border-border/60 hover:bg-primary/5 hover:border-primary/30"
+              )}
+            >
+              Join Community
+            </a>
+          </div>
         </div>
       </div>
     </section>
