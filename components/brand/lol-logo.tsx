@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface LolLogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -9,17 +10,10 @@ interface LolLogoProps {
 }
 
 const sizeMap = {
-  sm: "w-10 h-10",
-  md: "w-14 h-14",
-  lg: "w-20 h-20",
-  xl: "w-32 h-32",
-};
-
-const emojiSizeMap = {
-  sm: "w-5 h-5",
-  md: "w-7 h-7",
-  lg: "w-10 h-10",
-  xl: "w-16 h-16",
+  sm: { container: "w-10 h-10", img: 40 },
+  md: { container: "w-14 h-14", img: 56 },
+  lg: { container: "w-20 h-20", img: 80 },
+  xl: { container: "w-32 h-32", img: 128 },
 };
 
 const glowSizeMap = {
@@ -30,6 +24,8 @@ const glowSizeMap = {
 };
 
 export function LolLogo({ size = "md", className, showGlow = true }: LolLogoProps) {
+  const s = sizeMap[size];
+
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>
       {showGlow && (
@@ -42,15 +38,17 @@ export function LolLogo({ size = "md", className, showGlow = true }: LolLogoProp
       )}
       <div
         className={cn(
-          "relative flex items-center justify-center rounded-full",
-          sizeMap[size]
+          "relative flex items-center justify-center",
+          s.container
         )}
       >
-        {/* Twemoji for consistent cross-platform emoji rendering */}
-        <img
-          src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f602.svg"
-          alt="😂"
-          className={cn("relative z-10", emojiSizeMap[size])}
+        <Image
+          src="/lol-logo.svg"
+          alt="$lol"
+          width={s.img}
+          height={s.img}
+          className="relative z-10"
+          priority
           draggable={false}
         />
       </div>
