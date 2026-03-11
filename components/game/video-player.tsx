@@ -16,18 +16,21 @@ export function VideoPlayer({ isPlaying, video }: VideoPlayerProps) {
         {isPlaying && video ? (
           video.type === "youtube" ? (
             <iframe
-              src={`https://www.youtube.com/embed/${video.id}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&color=white`}
+              key={video.id}
+              src={`https://www.youtube.com/embed/${video.id}?autoplay=1&mute=0&controls=1&modestbranding=1&rel=0&playsinline=1`}
               className="absolute inset-0 w-full h-full"
-              allow="autoplay; encrypted-media"
+              allow="autoplay; encrypted-media; fullscreen"
               allowFullScreen
               title={video.title}
             />
           ) : (
             <video
+              key={video.id}
               src={video.url}
               className="absolute inset-0 w-full h-full object-contain"
               autoPlay
-              controls={false}
+              controls
+              playsInline
             />
           )
         ) : (
@@ -36,7 +39,9 @@ export function VideoPlayer({ isPlaying, video }: VideoPlayerProps) {
               <Play className="w-8 h-8 text-primary ml-1" />
             </div>
             <p className="text-sm font-medium">
-              {video ? "Press Start Round to play" : "Add some videos to get started"}
+              {video
+                ? "Press Start Round to play"
+                : "Add some videos to get started"}
             </p>
           </div>
         )}

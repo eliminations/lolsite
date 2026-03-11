@@ -13,43 +13,17 @@ import { AddVideoDialog } from "@/components/game/add-video-dialog";
 import { UsernameDialog } from "@/components/game/username-dialog";
 import { MiniLeaderboard } from "@/components/game/mini-leaderboard";
 import { useMic } from "@/hooks/use-mic";
-import {
-  DEFAULT_VIDEOS,
-  GAME_ROUNDS,
-  LAUGH_THRESHOLD,
-  type GameVideo,
-} from "@/lib/constants";
+import { GAME_ROUNDS, LAUGH_THRESHOLD, type GameVideo } from "@/lib/constants";
 import {
   getUsername,
   setUsername as saveUsername,
-  getLeaderboard,
-  addScore,
   type LeaderboardEntry,
 } from "@/lib/leaderboard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Youtube, Film, User } from "lucide-react";
+import { Plus, Trash2, Youtube, Film, User, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-
-const STORAGE_KEY = "lol-game-videos";
-
-function loadVideos(): GameVideo[] {
-  if (typeof window === "undefined") return DEFAULT_VIDEOS;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as GameVideo[];
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {}
-  return DEFAULT_VIDEOS;
-}
-
-function saveVideos(videos: GameVideo[]) {
-  const persistable = videos.filter((v) => v.type === "youtube");
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(persistable));
-}
 
 function shuffleArray<T>(arr: T[]): T[] {
   const shuffled = [...arr];
@@ -65,25 +39,33 @@ export default function GamePage() {
   const [username, setUsername] = useState<string | null>(null);
   const [showUsernameDialog, setShowUsernameDialog] = useState(false);
 
-  // Leaderboard
+  // Shared data
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [videos, setVideos] = useState<GameVideo[]>([]);
+  const [loadingVideos, setLoadingVideos] = useState(true);
+
+  // Local file uploads (session only)
+  const [localFiles, setLocalFiles] = useState<GameVideo[]>([]);
 
   // Game state
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAddVideo, setShowAddVideo] = useState(false);
-  const [videos, setVideos] = useState<GameVideo[]>(() => loadVideos());
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentRound, setCurrentRound] = useState(1);
   const [survived, setSurvived] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [showGameOver, setShowGameOver] = useState(false);
   const [laughedOnRound, setLaughedOnRound] = useState(false);
-  const [gameVideos, setGameVideos] = useState<GameVideo[]>(() =>
-    shuffleArray(loadVideos())
-  );
+  const [gameVideos, setGameVideos] = useState<GameVideo[]>([]);
 
   const { level, isActive, isLaughing, start, stop, error } =
     useMic(LAUGH_THRESHOLD);
+
+  // All available videos = server videos + local uploads
+  const allVideos = useMemo(
+    () => [...videos, ...localFiles],
+    [videos, localFiles]
+  );
 
   const currentVideo = gameVideos[currentRound - 1] || null;
 
@@ -91,7 +73,7 @@ export default function GamePage() {
     return gameVideos.slice(currentRound, currentRound + 4);
   }, [gameVideos, currentRound]);
 
-  // Load username and leaderboard on mount
+  // Load data on mount
   useEffect(() => {
     const stored = getUsername();
     if (stored) {
@@ -100,15 +82,42 @@ export default function GamePage() {
     } else {
       setShowUsernameDialog(true);
     }
-    setLeaderboard(getLeaderboard());
+
+    // Fetch shared videos
+    fetch("/api/videos")
+      .then((r) => r.json())
+      .then((data) => {
+        const vids: GameVideo[] = (data || []).map(
+          (v: { id: string; title: string }) => ({
+            id: v.id,
+            title: v.title,
+            type: "youtube" as const,
+          })
+        );
+        setVideos(vids);
+        setGameVideos(shuffleArray(vids));
+      })
+      .catch(() => {
+        // API not available, use empty
+        setVideos([]);
+      })
+      .finally(() => setLoadingVideos(false));
+
+    // Fetch shared leaderboard
+    fetch("/api/leaderboard")
+      .then((r) => r.json())
+      .then((data) => setLeaderboard(data || []))
+      .catch(() => setLeaderboard([]));
   }, []);
 
-  // Persist videos
+  // When allVideos changes, update gameVideos if not mid-game
   useEffect(() => {
-    saveVideos(videos);
-  }, [videos]);
+    if (!isPlaying && !gameOver && currentRound === 1) {
+      setGameVideos(shuffleArray(allVideos));
+    }
+  }, [allVideos, isPlaying, gameOver, currentRound]);
 
-  // Handle laugh detection — ONLY when actively playing
+  // Handle laugh detection
   useEffect(() => {
     if (!isPlaying || !isActive || !isLaughing) return;
 
@@ -117,10 +126,22 @@ export default function GamePage() {
     setGameOver(true);
     setShowGameOver(true);
 
-    // Record score
+    // Record score to server
     if (username) {
-      const updated = addScore(username, survived, GAME_ROUNDS);
-      setLeaderboard(updated);
+      fetch("/api/leaderboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          score: survived,
+          total: GAME_ROUNDS,
+        }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (Array.isArray(data)) setLeaderboard(data);
+        })
+        .catch(() => {});
     }
 
     toast.error("You laughed! Game over.");
@@ -134,24 +155,72 @@ export default function GamePage() {
     toast.success(`Welcome, ${name}!`);
   }, []);
 
-  const handleAddVideo = useCallback((video: GameVideo) => {
-    setVideos((prev) => [...prev, video]);
-    toast.success(`Added "${video.title}"`);
-  }, []);
+  const handleAddVideo = useCallback(
+    (video: GameVideo) => {
+      if (video.type === "file") {
+        // Local file — session only
+        setLocalFiles((prev) => [...prev, video]);
+        toast.success(`Added "${video.title}" (local)`);
+        return;
+      }
+
+      // YouTube — save to server for all users
+      fetch("/api/videos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: video.id,
+          title: video.title,
+          type: "youtube",
+          addedBy: username || "anon",
+        }),
+      })
+        .then((r) => {
+          if (r.status === 409) {
+            toast.error("Video already exists!");
+            return null;
+          }
+          return r.json();
+        })
+        .then((data) => {
+          if (data && !data.error) {
+            setVideos((prev) => [
+              ...prev,
+              { id: data.id, title: data.title, type: "youtube" },
+            ]);
+            toast.success(`Added "${video.title}" for everyone!`);
+          }
+        })
+        .catch(() => {
+          toast.error("Failed to save video. Try again.");
+        });
+    },
+    [username]
+  );
 
   const handleRemoveVideo = useCallback((id: string) => {
-    setVideos((prev) => {
-      const updated = prev.filter((v) => v.id !== id);
-      return updated.length > 0 ? updated : DEFAULT_VIDEOS;
-    });
-    toast("Video removed");
+    // Remove local file
+    setLocalFiles((prev) => prev.filter((v) => v.id !== id));
+
+    // Remove from server
+    fetch(`/api/videos?id=${id}`, { method: "DELETE" })
+      .then(() => {
+        setVideos((prev) => prev.filter((v) => v.id !== id));
+        toast("Video removed");
+      })
+      .catch(() => toast.error("Failed to remove video"));
   }, []);
 
   const handleStart = useCallback(async () => {
     if (gameOver) return;
-    if (videos.length === 0) {
+    if (allVideos.length === 0) {
       toast.error("Add some videos first!");
       return;
+    }
+
+    // Make sure gameVideos is populated
+    if (gameVideos.length === 0) {
+      setGameVideos(shuffleArray(allVideos));
     }
 
     if (!isActive) {
@@ -162,7 +231,7 @@ export default function GamePage() {
     setIsPlaying(true);
     setLaughedOnRound(false);
     toast("Round " + currentRound + " — keep a straight face.");
-  }, [gameOver, isActive, start, currentRound, videos.length]);
+  }, [gameOver, isActive, start, currentRound, allVideos, gameVideos.length]);
 
   const handleSkip = useCallback(() => {
     if (!isPlaying) return;
@@ -178,10 +247,21 @@ export default function GamePage() {
       setShowGameOver(true);
       setLaughedOnRound(false);
 
-      // Record score
       if (username) {
-        const updated = addScore(username, newSurvived, GAME_ROUNDS);
-        setLeaderboard(updated);
+        fetch("/api/leaderboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            score: newSurvived,
+            total: GAME_ROUNDS,
+          }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (Array.isArray(data)) setLeaderboard(data);
+          })
+          .catch(() => {});
       }
 
       toast.success("All rounds complete!");
@@ -198,9 +278,9 @@ export default function GamePage() {
     setGameOver(false);
     setShowGameOver(false);
     setLaughedOnRound(false);
-    setGameVideos(shuffleArray(videos));
+    setGameVideos(shuffleArray(allVideos));
     toast("New game. New order. Let's go.");
-  }, [videos]);
+  }, [allVideos]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -331,8 +411,14 @@ export default function GamePage() {
                   Video Library
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {videos.length} video{videos.length !== 1 ? "s" : ""} — add
-                  your own YouTube links or upload files
+                  {loadingVideos ? (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Loading shared videos...
+                    </span>
+                  ) : (
+                    `${allVideos.length} video${allVideos.length !== 1 ? "s" : ""} — shared across all players`
+                  )}
                 </p>
               </div>
               <Button
@@ -344,8 +430,16 @@ export default function GamePage() {
               </Button>
             </div>
 
+            {allVideos.length === 0 && !loadingVideos && (
+              <div className="rounded-xl border border-dashed border-border/40 bg-card/10 p-8 text-center">
+                <p className="text-muted-foreground text-sm">
+                  No videos yet. Be the first to add one!
+                </p>
+              </div>
+            )}
+
             <div className="grid gap-2">
-              {videos.map((video) => (
+              {allVideos.map((video) => (
                 <div
                   key={video.id}
                   className={cn(
@@ -364,11 +458,11 @@ export default function GamePage() {
                       {video.title}
                     </p>
                     <p className="text-xs text-muted-foreground font-mono truncate">
-                      {video.type === "youtube" ? video.id : "Local file"}
+                      {video.type === "youtube" ? video.id : "Local file (this session)"}
                     </p>
                   </div>
                   <Badge variant="secondary" className="text-[10px] shrink-0">
-                    {video.type === "youtube" ? "YouTube" : "Upload"}
+                    {video.type === "youtube" ? "YouTube" : "Local"}
                   </Badge>
                   <button
                     onClick={() => handleRemoveVideo(video.id)}
